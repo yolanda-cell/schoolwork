@@ -1,16 +1,6 @@
-//
-// Created by Yolan on 2025/9/23.
-//
-#include <stdio.h>
-typedef  unsigned int float_bits;
-// Access bit-level representation floating-point number
-
-float_bits float_i2f(int i);
+#include "sol_week3.h"
 int main() {
-    printf("%d\n", sizeof(int));
+    test_all_csapp_week3();
+    // ... 其他逻辑
     return 0;
-}
-float_bits float_i2f(int i) {
-
-
 }
