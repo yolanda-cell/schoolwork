@@ -76,24 +76,24 @@ float_bits float_twice(float_bits f) {
     unsigned sign = f >> 31;
     unsigned exp  = (f >> 23) & 0xFF;
     unsigned frac = f & 0x7FFFFF;
-    // NaN or infinity
+    // NaN & infinity
     if (exp == 0xFF) {
         return f;
     }
     if (exp == 0) {
-        // Denormalized: multiply fraction by 2
+        // Denormalized: frac×2
         frac <<= 1;
-        // Check if it becomes normalized
+        // 如果变成规格化数
         if (frac & 0x800000) {
             exp = 1;
             frac &= 0x7FFFFF;
         }
         return (sign << 31) | (exp << 23) | frac;
     }
-    // Normalized: increment exponent
+    // Normalized
     exp += 1;
     if (exp == 0xFF) {
-        // Overflow to infinity
+        // 溢出成无限大
         frac = 0;
     }
     return (sign << 31) | (exp << 23) | frac;
@@ -107,28 +107,26 @@ float_bits float_half(float_bits f) {
     unsigned sign = f >> 31;
     unsigned exp  = (f >> 23) & 0xFF;
     unsigned frac = f & 0x7FFFFF;
-    // NaN or infinity
+    // NaN & infinity
     if (exp == 0xFF) {
         return f;
     }
     if (exp == 0 || exp == 1) {
-        // Denormalized or about to be denormalized
-        // Add the implicit leading 1 to the fraction if exp == 1
         if (exp == 1) {
-            frac |= 0x800000;
+            frac |= 0x800000; // 隐含的1加回去
         }
-        // round to even
+        //处理rounding
         unsigned add = ((frac & 3) == 3);
         frac = (frac >> 1) + add;
         exp = 0;
         return (sign << 31) | (exp << 23) | frac;
     }
-
-    // Normalized, just decrement exponent
+    // Normalized
     exp -= 1;
     return (sign << 31) | (exp << 23) | frac;
 }
 
+//测试函数部分
 //// 2.66
 void test_leftmost_one() {
     struct {unsigned x; int expect;} tests[] = {
